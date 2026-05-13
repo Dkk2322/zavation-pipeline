@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zavation Pipeline Entry</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #060d17; color: #8ab0c8; font-family: 'DM Mono', 'Fira Code', monospace; min-height: 100vh; }
+  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #060d17; } ::-webkit-scrollbar-thumb { background: #1a2a38; border-radius: 2px; }
+
+  header { border-bottom: 1px solid #0f1e2e; padding: 14px 28px; display: flex; align-items: center; gap: 14px; background: #060d17; position: sticky; top: 0; z-index: 10; }
+  .logo { width: 28px; height: 28px; border-radius: 5px; background: linear-gradient(135deg, #0369a1, #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff; font-family: 'Syne', sans-serif; flex-shrink: 0; }
+  .brand-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; color: #c8dce8; letter-spacing: 0.06em; }
+  .brand-sub { font-size: 9px; color: #1e3a50; letter-spacing: 0.18em; }
+  .header-error { margin-left: auto; font-size: 10px; color: #ef4444; letter-spacing: 0.08em; display: none; }
+  .header-error.visible { display: block; }
+
+  .container { max-width: 680px; margin: 0 auto; padding: 28px 28px 60px; }
+
+  .preview-strip { background: #0b1320; border: 1px solid #1a2a38; border-radius: 6px; padding: 10px 16px; margin-bottom: 20px; display: none; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 11px; }
+  .preview-strip.visible { display: flex; }
+  .preview-dot { color: #1e3a50; }
+
+  .section { margin-bottom: 24px; }
+  .section-title { font-size: 9px; color: #1e4060; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #0f1e2e; }
+
+  .row { display: grid; gap: 14px; margin-bottom: 14px; }
+  .row.col2 { grid-template-columns: 1fr 1fr; }
+  .row.col1 { grid-template-columns: 1fr; }
+
+  label { display: block; font-size: 10px; color: #3a5a70; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
+  label .req { color: #ef4444; margin-left: 3px; }
+
+  input, select, textarea {
+    width: 100%; background: #0b1320; border: 1px solid #1a2a38; color: #c8dce8;
+    border-radius: 5px; padding: 9px 12px; font-size: 12px; font-family: inherit;
+    outline: none; transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: #1e5a7a; }
+  input::placeholder, textarea::placeholder { color: #1e3a50; }
+  input.error, select.error { background: #1a0f0f; border-color: #7f1d1d; }
+  select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%232e4a5e'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 30px; }
+  select option { background: #0b1320; color: #c8dce8; }
+  textarea { resize: vertical; }
+
+  .autofill-box { padding: 9px 12px; background: #080f18; border: 1px solid #0f1e2e; border-radius: 5px; font-size: 12px; color: #1e3a50; font-family: inherit; min-height: 38px; }
+
+  .stage-hint { background: #080f18; border-radius: 5px; padding: 8px 14px; font-size: 11px; letter-spacing: 0.03em; margin-top: 8px; display: none; }
+
+  .submit-btn {
+    width: 100%; background: linear-gradient(135deg, #0369a1, #7c3aed); border: none;
+    color: #fff; border-radius: 6px; padding: 13px; font-size: 12px; font-family: inherit;
+    font-weight: 700; letter-spacing: 0.12em; cursor: pointer; transition: opacity 0.2s;
+  }
+  .submit-btn:hover { opacity: 0.9; }
+  .submit-btn:disabled { background: #0b1320; color: #3a5570; cursor: not-allowed; }
+
+  .submit-footer { margin-top: 16px; font-size: 10px; color: #1e3040; text-align: center; letter-spacing: 0.06em; }
+
+  .error-banner { background: #1a0f0f; border: 1px solid #7f1d1d; border-radius: 5px; padding: 10px 14px; margin-bottom: 20px; font-size: 11px; color: #ef4444; display: none; }
+  .error-banner.visible { display: block; }
+
+  .success-screen { display: none; min-height: 100vh; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 40px; }
+  .success-screen.visible { display: flex; }
+  .success-icon { width: 56px; height: 56px; border-radius: 50%; background: #0b2e20; border: 2px solid #10b981; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 22px; }
+  .success-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #34d399; margin-bottom: 8px; }
+  .success-sub { font-size: 11px; color: #3a5570; margin-bottom: 6px; }
+  .success-sub2 { font-size: 10px; color: #1e3a50; margin-bottom: 28px; }
+  .reset-btn { background: #0b1320; border: 1px solid #1a3a50; color: #38bdf8; border-radius: 5px; padding: 10px 24px; font-size: 11px; font-family: inherit; cursor: pointer; letter-spacing: 0.1em; }
+
+  @media (max-width: 480px) {
+    .row.col2 { grid-template-columns: 1fr; }
+    .container { padding: 20px 16px 60px; }
+    header { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Z</div>
+  <div>
+    <div class="brand-name">ZAVATION MEDICAL</div>
+    <div class="brand-sub">NEW PIPELINE ENTRY</div>
+  </div>
+  <div class="header-error" id="headerError">FILL REQUIRED FIELDS</div>
+</header>
+
+<div class="container" id="mainForm">
+
+  <div class="error-banner" id="errorBanner">
+    Submission failed — please try again or check your connection.
+  </div>
+
+  <div class="preview-strip" id="previewStrip">
+    <span id="prevSurgeon" style="color:#b8d0e0;font-weight:600;"></span>
+    <span class="preview-dot">·</span>
+    <span id="prevProduct" style="font-weight:600;"></span>
+    <span class="preview-dot">·</span>
+    <span id="prevGrouping" style="font-size:10px;letter-spacing:0.08em;"></span>
+    <span class="preview-dot">·</span>
+    <span id="prevStage" style="font-size:10px;font-weight:700;"></span>
+    <span class="preview-dot">·</span>
+    <span id="prevSales" style="font-size:11px;color:#e2eaf4;font-weight:700;font-family:'Syne',sans-serif;"></span>
+  </div>
+
+  <!-- Account Info -->
+  <div class="section">
+    <div class="section-title">Account Info</div>
+    <div class="row col2">
+      <div>
+        <label>Distributor <span class="req">*</span></label>
+        <input type="text" id="distributor" placeholder="e.g. Surgical Alternatives">
+      </div>
+      <div>
+        <label>Surgeon <span class="req">*</span></label>
+        <input type="text" id="surgeon" placeholder="e.g. Dr. Smith">
+      </div>
+    </div>
+    <div class="row col1">
+      <div>
+        <label>Hospital(s) <span class="req">*</span></label>
+        <input type="text" id="hospital" placeholder="e.g. Houston Methodist, Memorial Hermann">
+      </div>
+    </div>
+  </div>
+
+  <!-- Product -->
+  <div class="section">
+    <div class="section-title">Product</div>
+    <div class="row col2">
+      <div>
+        <label>System / Product <span class="req">*</span></label>
+        <select id="product" onchange="onProductChange()">
+          <option value="">Select product...</option>
+          <optgroup label="── Posterior Lumbar ──">
+            <option>CentraFix</option><option>EZ Spand</option><option>F3D Curved</option>
+            <option>F3D Straight</option><option>FlxFit</option><option>Labyrinth PLIF</option>
+            <option>Modular Screw</option><option>NanoPrime Labyrinth Straight</option>
+            <option>TIGER</option><option>Tiger 2</option><option>Tiger 2 Deformity</option>
+            <option>Tiger 2 Xtab</option><option>Tiger MIS</option><option>Whitney PLIF</option>
+            <option>Xtab</option>
+          </optgroup>
+          <optgroup label="── Anterior Lumbar ──">
+            <option>Corpectomy Lumbar</option><option>F3D ALIF</option><option>F3D Lateral</option>
+            <option>HL Lateral</option><option>Lateral Peek</option><option>M3</option>
+            <option>NanoPrime Lateral</option><option>NanoPrime Varisync ALIF</option>
+            <option>Oro</option><option>Oro 1 Hole</option><option>Varisync ALIF</option>
+            <option>Z span</option><option>Z span 2 hole</option><option>Z-Link Lumbar</option>
+            <option>Zou</option>
+          </optgroup>
+          <optgroup label="── Anterior Cervical ──">
+            <option>Anodyne</option><option>Anodyne Single</option><option>Cervical IBF</option>
+            <option>Cervical Plate</option><option>CL5 PEEK</option><option>Corpectomy Cervical</option>
+            <option>EZ Plate</option><option>F3D Cervical</option><option>F3D Corpectomy</option>
+            <option>F3D Suresize</option><option>F3Z Cervical</option><option>Labyrinth Cervical</option>
+            <option>NanoPrime Labyrinth Cervical</option><option>Stand Alone Cervical</option>
+            <option>Terrace</option><option>Varisync Cervical</option><option>Whitney Cervical</option>
+            <option>Z-Link Cervical</option>
+          </optgroup>
+          <optgroup label="── Posterior Cervical ──">
+            <option>Tiger OCT</option>
+          </optgroup>
+          <optgroup label="── Interventional ──">
+            <option>Entasis</option><option>ISP</option><option>Posterior SI</option>
+            <option>SI Screw</option><option>Siber Ti</option><option>Sibi</option>
+            <option>Sinapse</option><option>ZV Graft</option><option>ZV Plasty Bi</option>
+            <option>ZV Plasty Flex</option><option>ZV Plasty Uni</option>
+          </optgroup>
+          <optgroup label="── Biologics ──">
+            <option>Amnion</option><option>CBM</option><option>Cervical Allograft</option>
+            <option>Cortical Fiber</option><option>DBM Fiber Strips</option>
+            <option>Unifuze C</option><option>Zavatrix</option><option>ZV Pro</option>
+          </optgroup>
+          <optgroup label="── Other ──">
+            <option>Occipital Plate ZV</option><option>Posterior Cervical ZV</option>
+          </optgroup>
+        </select>
+      </div>
+      <div>
+        <label>Product Grouping</label>
+        <div class="autofill-box" id="groupingDisplay">Auto-filled from product</div>
+        <input type="hidden" id="grouping">
+      </div>
+    </div>
+    <div class="row col1">
+      <div>
+        <label>Key Competitor</label>
+        <input type="text" id="competitor" placeholder="e.g. Medtronic, Globus, NuVasive...">
+      </div>
+    </div>
+    <div class="row col1">
+      <div>
+        <label>Specialty Items Needed</label>
+        <input type="text" id="specialtyItems" placeholder="e.g. Navigation, MISTLIF Retractor, Fenestrated...">
+      </div>
+    </div>
+  </div>
+
+  <!-- Pipeline Details -->
+  <div class="section">
+    <div class="section-title">Pipeline Details</div>
+    <div class="row col2">
+      <div>
+        <label>Monthly Sales ($) <span class="req">*</span></label>
+        <input type="number" id="monthlySales" placeholder="e.g. 20000" oninput="updatePreview()">
+      </div>
+      <div>
+        <label>Price Level <span class="req">*</span></label>
+        <select id="priceLevel">
+          <option value="">Select price level...</option>
+          <option value="Below Average">Below Average — HCA (~450 pedicle screws)</option>
+          <option value="Average">Average — Tenet, CHS (~600–700 screws)</option>
+          <option value="Premium Account">Premium Account — HPG National+ (1100+ screws)</option>
+          <option value="Top Price Account">Top Price Account — VA / List Pricing</option>
+        </select>
+      </div>
+    </div>
+    <div class="row col2">
+      <div>
+        <label>Starting Month <span class="req">*</span></label>
+        <select id="startingMonth">
+          <option value="">Select month...</option>
+          <option value="1">Jan (Mo. 1)</option><option value="2">Feb (Mo. 2)</option>
+          <option value="3">Mar (Mo. 3)</option><option value="4">Apr (Mo. 4)</option>
+          <option value="5">May (Mo. 5)</option><option value="6">Jun (Mo. 6)</option>
+          <option value="7">Jul (Mo. 7)</option><option value="8">Aug (Mo. 8)</option>
+          <option value="9">Sep (Mo. 9)</option><option value="10">Oct (Mo. 10)</option>
+          <option value="11">Nov (Mo. 11)</option><option value="12">Dec (Mo. 12)</option>
+        </select>
+      </div>
+      <div>
+        <label>Growth Bucket</label>
+        <select id="growthBucket">
+          <option value="Pipeline">Pipeline</option>
+          <option value="New Products">New Products</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage -->
+  <div class="section">
+    <div class="section-title">Stage / Key Action</div>
+    <div>
+      <label>Key Action <span class="req">*</span></label>
+      <select id="keyAction" onchange="onStageChange()">
+        <option value="">Select stage...</option>
+        <option value="Lead">Lead</option>
+        <option value="Demo">Demo</option>
+        <option value="Contracting">Contracting</option>
+        <option value="Schedule Training">Schedule Training</option>
+        <option value="Custom Needed">Custom Needed</option>
+        <option value="Product Needed">Product Needed</option>
+        <option value="Schedule First Case">Schedule First Case</option>
+        <option value="Closed">Closed</option>
+        <option value="Lost">Lost</option>
+      </select>
+      <div class="stage-hint" id="stageHint"></div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="section">
+    <div class="section-title">Notes / To Do</div>
+    <textarea id="notes" rows="3" placeholder="Key action items, surgeon feedback, next steps..."></textarea>
+  </div>
+
+  <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">SUBMIT PIPELINE ENTRY →</button>
+  <div class="submit-footer">ENTRIES POST TO CENTRALIZED ZAVATION PIPELINE · 2026</div>
+
+</div>
+
+<!-- Success Screen -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">✓</div>
+  <div class="success-title">Entry Submitted</div>
+  <div class="success-sub" id="successSub"></div>
+  <div class="success-sub2" id="successSub2"></div>
+  <button class="reset-btn" onclick="resetForm()">+ ADD ANOTHER ENTRY</button>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlYfjZd61y7RqHaJHd6KrQNqE1eQgPuL9Vd2F6fF7NwejZTktksO1CetkgvzC4IXwk/exec";
+
+const PRODUCT_GROUPINGS = {
+  "CentraFix":"Posterior Lumbar","EZ Spand":"Posterior Lumbar","F3D Curved":"Posterior Lumbar",
+  "F3D Straight":"Posterior Lumbar","FlxFit":"Posterior Lumbar","Labyrinth PLIF":"Posterior Lumbar",
+  "Modular Screw":"Posterior Lumbar","NanoPrime Labyrinth Straight":"Posterior Lumbar",
+  "TIGER":"Posterior Lumbar","Tiger 2":"Posterior Lumbar","Tiger 2 Deformity":"Posterior Lumbar",
+  "Tiger 2 Xtab":"Posterior Lumbar","Tiger MIS":"Posterior Lumbar","Whitney PLIF":"Posterior Lumbar",
+  "Xtab":"Posterior Lumbar","Corpectomy Lumbar":"Anterior Lumbar","F3D ALIF":"Anterior Lumbar",
+  "F3D Lateral":"Anterior Lumbar","HL Lateral":"Anterior Lumbar","Lateral Peek":"Anterior Lumbar",
+  "M3":"Anterior Lumbar","NanoPrime Lateral":"Anterior Lumbar","NanoPrime Varisync ALIF":"Anterior Lumbar",
+  "Oro":"Anterior Lumbar","Oro 1 Hole":"Anterior Lumbar","Varisync ALIF":"Anterior Lumbar",
+  "Z span":"Anterior Lumbar","Z span 2 hole":"Anterior Lumbar","Z-Link Lumbar":"Anterior Lumbar",
+  "Zou":"Anterior Lumbar","Anodyne":"Anterior Cervical","Anodyne Single":"Anterior Cervical",
+  "Cervical IBF":"Anterior Cervical","Cervical Plate":"Anterior Cervical","CL5 PEEK":"Anterior Cervical",
+  "Corpectomy Cervical":"Anterior Cervical","EZ Plate":"Anterior Cervical","F3D Cervical":"Anterior Cervical",
+  "F3D Corpectomy":"Anterior Cervical","F3D Suresize":"Anterior Cervical","F3Z Cervical":"Anterior Cervical",
+  "Labyrinth Cervical":"Anterior Cervical","NanoPrime Labyrinth Cervical":"Anterior Cervical",
+  "Stand Alone Cervical":"Anterior Cervical","Terrace":"Anterior Cervical","Varisync Cervical":"Anterior Cervical",
+  "Whitney Cervical":"Anterior Cervical","Z-Link Cervical":"Anterior Cervical",
+  "Tiger OCT":"Posterior Cervical","Entasis":"Interventional","ISP":"Interventional",
+  "Posterior SI":"Interventional","SI Screw":"Interventional","Siber Ti":"Interventional",
+  "Sibi":"Interventional","Sinapse":"Interventional","ZV Graft":"Interventional",
+  "ZV Plasty Bi":"Interventional","ZV Plasty Flex":"Interventional","ZV Plasty Uni":"Interventional",
+  "Amnion":"Biologics","CBM":"Biologics","Cervical Allograft":"Biologics","Cortical Fiber":"Biologics",
+  "DBM Fiber Strips":"Biologics","Unifuze C":"Biologics","Zavatrix":"Biologics","ZV Pro":"Biologics",
+  "Occipital Plate ZV":"Other","Posterior Cervical ZV":"Other",
+};
+
+const GROUPING_COLORS = {
+  "Posterior Lumbar":"#38bdf8","Anterior Lumbar":"#818cf8","Anterior Cervical":"#fb923c",
+  "Posterior Cervical":"#f472b6","Interventional":"#34d399","Biologics":"#a3e635","Other":"#64748b",
+};
+
+const STAGE_DESCS = {
+  "Lead":"New distributor interest or surgeon brought up",
+  "Demo":"Need to schedule hands-on demo",
+  "Contracting":"Working on hospital approval",
+  "Schedule Training":"Hands-on lab or training needed",
+  "Custom Needed":"Requires a custom to continue",
+  "Product Needed":"Need additional sets of product",
+  "Schedule First Case":"Case booked, <5 cases completed",
+  "Closed":"5+ successful cases — conversion complete",
+  "Lost":"Surgeon/distributor moved on",
+};
+
+const STAGE_COLORS = {
+  "Lead":"#94a3b8","Demo":"#38bdf8","Contracting":"#facc15","Schedule Training":"#fb923c",
+  "Custom Needed":"#f472b6","Product Needed":"#4ade80","Schedule First Case":"#c084fc",
+  "Closed":"#34d399","Lost":"#4a4a6a",
+};
+
+function onProductChange() {
+  const product = document.getElementById('product').value;
+  const grouping = PRODUCT_GROUPINGS[product] || '';
+  const color = GROUPING_COLORS[grouping] || '#1e3a50';
+  document.getElementById('grouping').value = grouping;
+  const box = document.getElementById('groupingDisplay');
+  box.textContent = grouping || 'Auto-filled from product';
+  box.style.color = grouping ? color : '#1e3a50';
+  box.style.fontWeight = grouping ? '600' : '400';
+  box.style.letterSpacing = grouping ? '0.07em' : '0';
+  updatePreview();
+}
+
+function onStageChange() {
+  const stage = document.getElementById('keyAction').value;
+  const hint = document.getElementById('stageHint');
+  if (stage && STAGE_DESCS[stage]) {
+    hint.style.display = 'block';
+    hint.style.color = STAGE_COLORS[stage] || '#94a3b8';
+    hint.style.borderColor = (STAGE_COLORS[stage] || '#94a3b8') + '33';
+    hint.innerHTML = `<strong>${stage}:</strong> ${STAGE_DESCS[stage]}`;
+  } else {
+    hint.style.display = 'none';
+  }
+  updatePreview();
+}
+
+function updatePreview() {
+  const surgeon = document.getElementById('surgeon').value;
+  const product = document.getElementById('product').value;
+  const grouping = document.getElementById('grouping').value;
+  const stage = document.getElementById('keyAction').value;
+  const sales = document.getElementById('monthlySales').value;
+  const strip = document.getElementById('previewStrip');
+
+  if (!surgeon && !product) { strip.classList.remove('visible'); return; }
+  strip.classList.add('visible');
+
+  const color = GROUPING_COLORS[grouping] || '#64748b';
+  document.getElementById('prevSurgeon').textContent = surgeon || '';
+  document.getElementById('prevProduct').textContent = product || '';
+  document.getElementById('prevProduct').style.color = color;
+  document.getElementById('prevGrouping').textContent = grouping ? grouping.toUpperCase() : '';
+  document.getElementById('prevGrouping').style.color = color;
+  document.getElementById('prevStage').textContent = stage ? stage.toUpperCase() : '';
+  document.getElementById('prevStage').style.color = STAGE_COLORS[stage] || '#94a3b8';
+  document.getElementById('prevSales').textContent = sales ? '$' + Number(sales).toLocaleString() + '/mo' : '';
+}
+
+// Attach preview update to text inputs
+['surgeon', 'distributor', 'hospital'].forEach(id => {
+  document.getElementById(id).addEventListener('input', updatePreview);
+});
+
+function validate() {
+  const required = ['distributor','surgeon','hospital','product','keyAction','monthlySales','priceLevel','startingMonth'];
+  let valid = true;
+  required.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el.value) { el.classList.add('error'); valid = false; }
+    else el.classList.remove('error');
+  });
+  document.getElementById('headerError').classList.toggle('visible', !valid);
+  return valid;
+}
+
+async function handleSubmit() {
+  if (!validate()) return;
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'SUBMITTING...';
+  document.getElementById('errorBanner').classList.remove('visible');
+
+  const payload = {
+    distributor: document.getElementById('distributor').value,
+    surgeon: document.getElementById('surgeon').value,
+    hospital: document.getElementById('hospital').value,
+    product: document.getElementById('product').value,
+    grouping: document.getElementById('grouping').value,
+    keyAction: document.getElementById('keyAction').value,
+    monthlySales: document.getElementById('monthlySales').value,
+    priceLevel: document.getElementById('priceLevel').value,
+    startingMonth: document.getElementById('startingMonth').value,
+    growthBucket: document.getElementById('growthBucket').value,
+    competitor: document.getElementById('competitor').value,
+    specialtyItems: document.getElementById('specialtyItems').value,
+    notes: document.getElementById('notes').value,
+    submittedAt: new Date().toISOString(),
+  };
+
+  try {
+    const params = new URLSearchParams();
+    Object.entries(payload).forEach(([k, v]) => params.append(k, v));
+    await fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+
+    // Show success
+    document.getElementById('mainForm').style.display = 'none';
+    document.getElementById('successSub').textContent = payload.surgeon + ' · ' + payload.product;
+    document.getElementById('successSub2').textContent = payload.distributor + ' · ' + payload.hospital;
+    document.getElementById('successScreen').classList.add('visible');
+  } catch (err) {
+    console.error(err);
+    document.getElementById('errorBanner').classList.add('visible');
+    btn.disabled = false;
+    btn.textContent = 'SUBMIT PIPELINE ENTRY →';
+  }
+}
+
+function resetForm() {
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    if (el.type === 'hidden') return;
+    el.value = el.tagName === 'SELECT' && el.id === 'growthBucket' ? 'Pipeline' : '';
+    el.classList.remove('error');
+  });
+  document.getElementById('groupingDisplay').textContent = 'Auto-filled from product';
+  document.getElementById('groupingDisplay').style.color = '#1e3a50';
+  document.getElementById('stageHint').style.display = 'none';
+  document.getElementById('previewStrip').classList.remove('visible');
+  document.getElementById('headerError').classList.remove('visible');
+  document.getElementById('errorBanner').classList.remove('visible');
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('submitBtn').textContent = 'SUBMIT PIPELINE ENTRY →';
+  document.getElementById('mainForm').style.display = 'block';
+  document.getElementById('successScreen').classList.remove('visible');
+}
+</script>
+</body>
+</html>
