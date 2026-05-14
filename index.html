@@ -3,463 +3,991 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zavation Pipeline Entry</title>
+<title>Zavation Pipeline</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #060d17; color: #8ab0c8; font-family: 'DM Mono', 'Fira Code', monospace; min-height: 100vh; }
-  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #060d17; } ::-webkit-scrollbar-thumb { background: #1a2a38; border-radius: 2px; }
+  body { background: #0a0a0a; color: #c8c8c8; font-family: 'DM Mono', 'Fira Code', monospace; min-height: 100vh; font-size: 12px; }
+  ::-webkit-scrollbar { width: 5px; height: 5px; } ::-webkit-scrollbar-track { background: #0a0a0a; } ::-webkit-scrollbar-thumb { background: #262626; border-radius: 2px; }
 
-  header { border-bottom: 1px solid #0f1e2e; padding: 14px 28px; display: flex; align-items: center; gap: 14px; background: #060d17; position: sticky; top: 0; z-index: 10; }
-  .logo { width: 28px; height: 28px; border-radius: 5px; background: linear-gradient(135deg, #0369a1, #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #fff; font-family: 'Syne', sans-serif; flex-shrink: 0; }
-  .brand-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; color: #c8dce8; letter-spacing: 0.06em; }
-  .brand-sub { font-size: 9px; color: #1e3a50; letter-spacing: 0.18em; }
-  .header-error { margin-left: auto; font-size: 10px; color: #ef4444; letter-spacing: 0.08em; display: none; }
-  .header-error.visible { display: block; }
+  /* Header & Nav */
+  header { border-bottom: 1px solid #1f1f1f; padding: 12px 24px; display: flex; align-items: center; gap: 18px; background: #0a0a0a; position: sticky; top: 0; z-index: 50; flex-wrap: wrap; }
+  .logo { width: 56px; height: auto; flex-shrink: 0; display: block; }
+  .brand { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; color: #e8e8e8; letter-spacing: 0.06em; }
+  .brand-sub { font-size: 9px; color: #7a4a4a; letter-spacing: 0.18em; }
+  .nav { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+  .nav-btn { background: transparent; border: 1px solid transparent; color: #999999; padding: 6px 14px; font-size: 10px; font-family: inherit; cursor: pointer; border-radius: 4px; letter-spacing: 0.12em; transition: all 0.15s; }
+  .nav-btn:hover { color: #c8c8c8; border-color: #262626; }
+  .nav-btn.active { background: linear-gradient(180deg, #1a0a0a, #0f0a0a); border-color: #7f1d1d; color: #ef4444; box-shadow: 0 0 0 1px #7f1d1d33; }
+  .user-tag { font-size: 10px; color: #777777; letter-spacing: 0.08em; padding: 6px 12px; background: #141414; border: 1px solid #262626; border-radius: 4px; }
 
-  .container { max-width: 680px; margin: 0 auto; padding: 28px 28px 60px; }
+  /* Screens */
+  .screen { display: none; padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .screen.active { display: block; }
+  .screen-narrow { max-width: 720px; }
 
-  .preview-strip { background: #0b1320; border: 1px solid #1a2a38; border-radius: 6px; padding: 10px 16px; margin-bottom: 20px; display: none; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 11px; }
-  .preview-strip.visible { display: flex; }
-  .preview-dot { color: #1e3a50; }
+  /* Login screen */
+  .login-wrap { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+  .login-card { background: #141414; border: 1px solid #262626; border-radius: 10px; padding: 36px; max-width: 420px; width: 100%; }
+  .login-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #e8e8e8; margin-bottom: 6px; }
+  .login-sub { font-size: 10px; color: #777777; letter-spacing: 0.12em; margin-bottom: 28px; text-transform: uppercase; }
 
-  .section { margin-bottom: 24px; }
-  .section-title { font-size: 9px; color: #1e4060; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #0f1e2e; }
-
-  .row { display: grid; gap: 14px; margin-bottom: 14px; }
+  /* Form basics */
+  .section { margin-bottom: 22px; }
+  .section-title { font-size: 9px; color: #b91c1c; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid #1f1f1f; }
+  .row { display: grid; gap: 12px; margin-bottom: 12px; }
   .row.col2 { grid-template-columns: 1fr 1fr; }
+  .row.col3 { grid-template-columns: 1fr 1fr 1fr; }
   .row.col1 { grid-template-columns: 1fr; }
-
-  label { display: block; font-size: 10px; color: #3a5a70; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
+  label { display: block; font-size: 10px; color: #999999; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 5px; }
   label .req { color: #ef4444; margin-left: 3px; }
-
   input, select, textarea {
-    width: 100%; background: #0b1320; border: 1px solid #1a2a38; color: #c8dce8;
-    border-radius: 5px; padding: 9px 12px; font-size: 12px; font-family: inherit;
-    outline: none; transition: border-color 0.15s;
+    width: 100%; background: #141414; border: 1px solid #262626; color: #e8e8e8;
+    border-radius: 5px; padding: 9px 12px; font-size: 12px; font-family: inherit; outline: none; transition: border-color 0.15s;
   }
-  input:focus, select:focus, textarea:focus { border-color: #1e5a7a; }
-  input::placeholder, textarea::placeholder { color: #1e3a50; }
+  input:focus, select:focus, textarea:focus { border-color: #8b0000; }
+  input::placeholder, textarea::placeholder { color: #3a3a3a; }
   input.error, select.error { background: #1a0f0f; border-color: #7f1d1d; }
   select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%232e4a5e'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 30px; }
-  select option { background: #0b1320; color: #c8dce8; }
-  textarea { resize: vertical; }
+  select option { background: #141414; color: #e8e8e8; }
+  select optgroup { color: #888888; font-style: normal; }
+  textarea { resize: vertical; font-family: inherit; }
 
-  .autofill-box { padding: 9px 12px; background: #080f18; border: 1px solid #0f1e2e; border-radius: 5px; font-size: 12px; color: #1e3a50; font-family: inherit; min-height: 38px; }
+  .submit-btn { width: 100%; background: linear-gradient(180deg, #dc2626, #991b1b); border: none; color: #fff; border-radius: 6px; padding: 13px; font-size: 12px; font-family: inherit; font-weight: 700; letter-spacing: 0.12em; cursor: pointer; transition: opacity 0.2s; }
+  .submit-btn:hover { opacity: 0.92; }
+  .submit-btn:disabled { background: #141414; color: #777777; cursor: not-allowed; }
+  .submit-btn.secondary { background: #141414; border: 1px solid #3a1212; color: #dc2626; }
 
-  .stage-hint { background: #080f18; border-radius: 5px; padding: 8px 14px; font-size: 11px; letter-spacing: 0.03em; margin-top: 8px; display: none; }
-
-  .submit-btn {
-    width: 100%; background: linear-gradient(135deg, #0369a1, #7c3aed); border: none;
-    color: #fff; border-radius: 6px; padding: 13px; font-size: 12px; font-family: inherit;
-    font-weight: 700; letter-spacing: 0.12em; cursor: pointer; transition: opacity 0.2s;
-  }
-  .submit-btn:hover { opacity: 0.9; }
-  .submit-btn:disabled { background: #0b1320; color: #3a5570; cursor: not-allowed; }
-
-  .submit-footer { margin-top: 16px; font-size: 10px; color: #1e3040; text-align: center; letter-spacing: 0.06em; }
-
-  .error-banner { background: #1a0f0f; border: 1px solid #7f1d1d; border-radius: 5px; padding: 10px 14px; margin-bottom: 20px; font-size: 11px; color: #ef4444; display: none; }
+  .error-banner { background: #1a0f0f; border: 1px solid #7f1d1d; border-radius: 5px; padding: 10px 14px; margin-bottom: 18px; font-size: 11px; color: #ef4444; display: none; }
   .error-banner.visible { display: block; }
 
-  .success-screen { display: none; min-height: 100vh; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 40px; }
-  .success-screen.visible { display: flex; }
-  .success-icon { width: 56px; height: 56px; border-radius: 50%; background: #0b2e20; border: 2px solid #10b981; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 22px; }
-  .success-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #34d399; margin-bottom: 8px; }
-  .success-sub { font-size: 11px; color: #3a5570; margin-bottom: 6px; }
-  .success-sub2 { font-size: 10px; color: #1e3a50; margin-bottom: 28px; }
-  .reset-btn { background: #0b1320; border: 1px solid #1a3a50; color: #38bdf8; border-radius: 5px; padding: 10px 24px; font-size: 11px; font-family: inherit; cursor: pointer; letter-spacing: 0.1em; }
+  /* Multi product rows */
+  .product-row { background: #0f0f0f; border: 1px solid #1f1f1f; border-radius: 6px; padding: 12px; margin-bottom: 8px; display: grid; grid-template-columns: 2fr 1fr 28px; gap: 10px; align-items: end; }
+  .remove-btn { background: transparent; border: 1px solid #2a2a4a; color: #6a4a4a; border-radius: 4px; width: 28px; height: 38px; cursor: pointer; font-size: 14px; font-family: inherit; }
+  .remove-btn:hover { color: #ef4444; border-color: #7f1d1d; }
+  .add-product-btn { background: transparent; border: 1px dashed #3a1212; color: #dc2626; border-radius: 5px; padding: 8px; width: 100%; font-size: 10px; font-family: inherit; cursor: pointer; letter-spacing: 0.1em; margin-top: 4px; }
+  .add-product-btn:hover { background: #1f0a0a; }
 
-  @media (max-width: 480px) {
-    .row.col2 { grid-template-columns: 1fr; }
-    .container { padding: 20px 16px 60px; }
-    header { padding: 12px 16px; }
+  /* Stats */
+  .stats-row { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat-card { background: #141414; border: 1px solid #262626; border-radius: 7px; padding: 16px 20px; flex: 1; min-width: 140px; position: relative; overflow: hidden; }
+  .stat-accent { position: absolute; top: 0; left: 0; width: 3px; height: 100%; border-radius: 2px 0 0 2px; }
+  .stat-label { font-size: 10px; color: #777777; font-weight: 700; letter-spacing: 0.12em; margin-bottom: 5px; text-transform: uppercase; }
+  .stat-value { font-size: 24px; font-weight: 800; color: #f0f0f0; line-height: 1; font-family: 'Syne', sans-serif; }
+  .stat-sub { font-size: 10px; color: #777777; margin-top: 4px; font-weight: 600; }
+
+  /* Filters */
+  .filters { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .filters input, .filters select { width: auto; padding: 6px 12px; font-size: 11px; }
+  .filters input { width: 240px; }
+  .record-count { margin-left: auto; font-size: 9px; color: #3a3a3a; letter-spacing: 0.1em; }
+
+  /* Table */
+  .table-wrap { border: 1px solid #1f1f1f; border-radius: 7px; overflow: hidden; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 900px; }
+  th { padding: 10px 12px; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: #666666; text-align: left; cursor: pointer; user-select: none; text-transform: uppercase; white-space: nowrap; border-bottom: 1px solid #1f1f1f; background: #0a0a0a; }
+  th:hover { color: #dc2626; }
+  td { padding: 10px 12px; font-size: 11px; color: #a0a0a0; border-bottom: 1px solid #1a1a1a; vertical-align: middle; }
+  tbody tr:hover td { background: #1c1c1c; }
+
+  /* Pills */
+  .pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 3px; padding: 2px 8px; font-size: 9px; font-weight: 700; letter-spacing: 0.07em; white-space: nowrap; text-transform: uppercase; }
+  .pill .dot { width: 5px; height: 5px; border-radius: 50%; }
+
+  /* Forecast table */
+  .forecast-table { font-size: 10px; }
+  .forecast-table th { background: #0a0a0a; }
+  .forecast-table td.metric { color: #f5f5f5; font-weight: 700; font-family: 'Syne', sans-serif; }
+  .forecast-table td.month-cell { text-align: right; color: #888888; }
+  .forecast-table tr.total-row td { background: #1f0a0a; color: #dc2626; font-weight: 700; }
+  .forecast-table td.rep-cell { color: #b0a0a0; font-weight: 600; }
+  .forecast-table td.product-cell { color: #e8e8e8; }
+
+  /* Modal */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+  .modal-bg.visible { display: flex; }
+  .modal { background: #141414; border: 1px solid #3a1212; border-radius: 10px; padding: 24px; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto; }
+  .modal-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: #e8e8e8; margin-bottom: 4px; }
+  .modal-sub { font-size: 10px; color: #777777; letter-spacing: 0.08em; margin-bottom: 20px; }
+  .modal-btns { display: flex; gap: 8px; margin-top: 18px; }
+  .modal-btns button { flex: 1; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 60px 20px; color: #666666; font-size: 11px; letter-spacing: 0.1em; }
+
+  /* Loading */
+  .loading { text-align: center; padding: 40px; color: #777777; font-size: 11px; letter-spacing: 0.12em; }
+
+  .helper-text { font-size: 10px; color: #777777; margin-top: 4px; }
+
+  @media (max-width: 600px) {
+    .row.col2, .row.col3 { grid-template-columns: 1fr; }
+    .product-row { grid-template-columns: 1fr; }
+    .nav { width: 100%; justify-content: flex-start; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">Z</div>
+  <img class="logo" src="data:image/png;base64,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" alt="Zavation">
   <div>
-    <div class="brand-name">ZAVATION MEDICAL</div>
-    <div class="brand-sub">NEW PIPELINE ENTRY</div>
+    <div class="brand">PIPELINE CRM</div>
+    <div class="brand-sub">2026 · COMMERCIAL OPERATIONS</div>
   </div>
-  <div class="header-error" id="headerError">FILL REQUIRED FIELDS</div>
+  <div class="nav" id="navMenu" style="display:none;">
+    <button class="nav-btn" data-screen="entry">+ NEW ENTRY</button>
+    <button class="nav-btn" data-screen="deals">MY DEALS</button>
+    <button class="nav-btn" data-screen="forecast">FORECAST</button>
+    <button class="nav-btn" id="managerNavBtn" data-screen="manager" style="display:none;">MANAGER VIEW</button>
+    <button class="nav-btn" onclick="logout()">SIGN OUT</button>
+  </div>
+  <div class="user-tag" id="userTag" style="display:none;"></div>
 </header>
 
-<div class="container" id="mainForm">
+<!-- LOGIN SCREEN -->
+<div class="screen active" id="screen-login">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-title">Sign In</div>
+      <div class="login-sub">SELECT YOUR ROLE TO CONTINUE</div>
 
-  <div class="error-banner" id="errorBanner">
-    Submission failed — please try again or check your connection.
+      <div class="section">
+        <label>Your Name <span class="req">*</span></label>
+        <select id="loginName">
+          <option value="">Select your name...</option>
+          <optgroup label="── Sales Managers ──">
+            <option>Craig Barrett</option><option>Bill Murphy</option>
+            <option>Jennifer Drinkwater</option><option>Cass Houck</option>
+            <option>Greg Mayer</option><option>Aaron Ingrim</option>
+            <option>Brady Lance</option><option>Nick Scodary</option>
+            <option>Nathan Teague</option><option>Dee Hillhouse</option>
+            <option>Andy Foster</option><option>Gabe Navar</option>
+            <option>Darleen Hutchins</option><option>Craig LaBianco</option>
+            <option>Mariah Woods</option>
+          </optgroup>
+          <optgroup label="── Area Vice Presidents ──">
+            <option>Keith Clements</option><option>Jeff Mathews</option><option>John Yoste</option>
+          </optgroup>
+          <optgroup label="── CCO ──">
+            <option>Brad Risher</option>
+          </optgroup>
+        </select>
+        <div class="helper-text">Managers (AVP/CCO) will be prompted for password</div>
+      </div>
+
+      <div class="section" id="passwordSection" style="display:none;">
+        <label>Manager Password <span class="req">*</span></label>
+        <input type="password" id="loginPassword" placeholder="Enter password">
+      </div>
+
+      <div class="error-banner" id="loginError"></div>
+      <button class="submit-btn" onclick="handleLogin()">SIGN IN →</button>
+    </div>
   </div>
+</div>
 
-  <div class="preview-strip" id="previewStrip">
-    <span id="prevSurgeon" style="color:#b8d0e0;font-weight:600;"></span>
-    <span class="preview-dot">·</span>
-    <span id="prevProduct" style="font-weight:600;"></span>
-    <span class="preview-dot">·</span>
-    <span id="prevGrouping" style="font-size:10px;letter-spacing:0.08em;"></span>
-    <span class="preview-dot">·</span>
-    <span id="prevStage" style="font-size:10px;font-weight:700;"></span>
-    <span class="preview-dot">·</span>
-    <span id="prevSales" style="font-size:11px;color:#e2eaf4;font-weight:700;font-family:'Syne',sans-serif;"></span>
-  </div>
+<!-- NEW ENTRY SCREEN -->
+<div class="screen screen-narrow" id="screen-entry">
+  <div class="error-banner" id="entryError"></div>
 
-  <!-- Account Info -->
   <div class="section">
     <div class="section-title">Account Info</div>
     <div class="row col2">
-      <div>
-        <label>Distributor <span class="req">*</span></label>
-        <input type="text" id="distributor" placeholder="e.g. Surgical Alternatives">
-      </div>
-      <div>
-        <label>Surgeon <span class="req">*</span></label>
-        <input type="text" id="surgeon" placeholder="e.g. Dr. Smith">
-      </div>
+      <div><label>Distributor <span class="req">*</span></label><input type="text" id="f_distributor" placeholder="e.g. Surgical Alternatives"></div>
+      <div><label>Surgeon <span class="req">*</span></label><input type="text" id="f_surgeon" placeholder="e.g. Dr. Smith"></div>
     </div>
     <div class="row col1">
-      <div>
-        <label>Hospital(s) <span class="req">*</span></label>
-        <input type="text" id="hospital" placeholder="e.g. Houston Methodist, Memorial Hermann">
-      </div>
+      <div><label>Hospital(s) <span class="req">*</span></label><input type="text" id="f_hospital" placeholder="e.g. Houston Methodist, Memorial Hermann"></div>
     </div>
   </div>
 
-  <!-- Product -->
   <div class="section">
-    <div class="section-title">Product</div>
-    <div class="row col2">
-      <div>
-        <label>System / Product <span class="req">*</span></label>
-        <select id="product" onchange="onProductChange()">
-          <option value="">Select product...</option>
-          <optgroup label="── Posterior Lumbar ──">
-            <option>CentraFix</option><option>EZ Spand</option><option>F3D Curved</option>
-            <option>F3D Straight</option><option>FlxFit</option><option>Labyrinth PLIF</option>
-            <option>Modular Screw</option><option>NanoPrime Labyrinth Straight</option>
-            <option>TIGER</option><option>Tiger 2</option><option>Tiger 2 Deformity</option>
-            <option>Tiger 2 Xtab</option><option>Tiger MIS</option><option>Whitney PLIF</option>
-            <option>Xtab</option>
-          </optgroup>
-          <optgroup label="── Anterior Lumbar ──">
-            <option>Corpectomy Lumbar</option><option>F3D ALIF</option><option>F3D Lateral</option>
-            <option>HL Lateral</option><option>Lateral Peek</option><option>M3</option>
-            <option>NanoPrime Lateral</option><option>NanoPrime Varisync ALIF</option>
-            <option>Oro</option><option>Oro 1 Hole</option><option>Varisync ALIF</option>
-            <option>Z span</option><option>Z span 2 hole</option><option>Z-Link Lumbar</option>
-            <option>Zou</option>
-          </optgroup>
-          <optgroup label="── Anterior Cervical ──">
-            <option>Anodyne</option><option>Anodyne Single</option><option>Cervical IBF</option>
-            <option>Cervical Plate</option><option>CL5 PEEK</option><option>Corpectomy Cervical</option>
-            <option>EZ Plate</option><option>F3D Cervical</option><option>F3D Corpectomy</option>
-            <option>F3D Suresize</option><option>F3Z Cervical</option><option>Labyrinth Cervical</option>
-            <option>NanoPrime Labyrinth Cervical</option><option>Stand Alone Cervical</option>
-            <option>Terrace</option><option>Varisync Cervical</option><option>Whitney Cervical</option>
-            <option>Z-Link Cervical</option>
-          </optgroup>
-          <optgroup label="── Posterior Cervical ──">
-            <option>Tiger OCT</option>
-          </optgroup>
-          <optgroup label="── Interventional ──">
-            <option>Entasis</option><option>ISP</option><option>Posterior SI</option>
-            <option>SI Screw</option><option>Siber Ti</option><option>Sibi</option>
-            <option>Sinapse</option><option>ZV Graft</option><option>ZV Plasty Bi</option>
-            <option>ZV Plasty Flex</option><option>ZV Plasty Uni</option>
-          </optgroup>
-          <optgroup label="── Biologics ──">
-            <option>Amnion</option><option>CBM</option><option>Cervical Allograft</option>
-            <option>Cortical Fiber</option><option>DBM Fiber Strips</option>
-            <option>Unifuze C</option><option>Zavatrix</option><option>ZV Pro</option>
-          </optgroup>
-          <optgroup label="── Other ──">
-            <option>Occipital Plate ZV</option><option>Posterior Cervical ZV</option>
-          </optgroup>
-        </select>
-      </div>
-      <div>
-        <label>Product Grouping</label>
-        <div class="autofill-box" id="groupingDisplay">Auto-filled from product</div>
-        <input type="hidden" id="grouping">
-      </div>
-    </div>
-    <div class="row col1">
-      <div>
-        <label>Key Competitor</label>
-        <input type="text" id="competitor" placeholder="e.g. Medtronic, Globus, NuVasive...">
-      </div>
-    </div>
-    <div class="row col1">
-      <div>
-        <label>Specialty Items Needed</label>
-        <input type="text" id="specialtyItems" placeholder="e.g. Navigation, MISTLIF Retractor, Fenestrated...">
-      </div>
-    </div>
+    <div class="section-title">Products & Monthly Revenue</div>
+    <div id="productList"></div>
+    <button class="add-product-btn" onclick="addProductRow()">+ ADD ANOTHER PRODUCT</button>
+    <div class="helper-text" style="margin-top:8px;">Each product creates its own row for forecast rollup. Same price level applies to all products on this deal.</div>
   </div>
 
-  <!-- Pipeline Details -->
   <div class="section">
     <div class="section-title">Pipeline Details</div>
-    <div class="row col2">
-      <div>
-        <label>Monthly Sales ($) <span class="req">*</span></label>
-        <input type="number" id="monthlySales" placeholder="e.g. 20000" oninput="updatePreview()">
-      </div>
+    <div class="row col3">
       <div>
         <label>Price Level <span class="req">*</span></label>
-        <select id="priceLevel">
-          <option value="">Select price level...</option>
-          <option value="Below Average">Below Average — HCA (~450 pedicle screws)</option>
-          <option value="Average">Average — Tenet, CHS (~600–700 screws)</option>
-          <option value="Premium Account">Premium Account — HPG National+ (1100+ screws)</option>
-          <option value="Top Price Account">Top Price Account — VA / List Pricing</option>
+        <select id="f_priceLevel">
+          <option value="">Select...</option>
+          <option value="Below Average">Below Average</option>
+          <option value="Average">Average</option>
+          <option value="Premium Account">Premium Account</option>
+          <option value="Top Price Account">Top Price Account</option>
         </select>
       </div>
-    </div>
-    <div class="row col2">
       <div>
         <label>Starting Month <span class="req">*</span></label>
-        <select id="startingMonth">
-          <option value="">Select month...</option>
-          <option value="1">Jan (Mo. 1)</option><option value="2">Feb (Mo. 2)</option>
-          <option value="3">Mar (Mo. 3)</option><option value="4">Apr (Mo. 4)</option>
-          <option value="5">May (Mo. 5)</option><option value="6">Jun (Mo. 6)</option>
-          <option value="7">Jul (Mo. 7)</option><option value="8">Aug (Mo. 8)</option>
-          <option value="9">Sep (Mo. 9)</option><option value="10">Oct (Mo. 10)</option>
-          <option value="11">Nov (Mo. 11)</option><option value="12">Dec (Mo. 12)</option>
+        <select id="f_startingMonth">
+          <option value="">Select...</option>
+          <option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option>
+          <option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option>
+          <option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option>
+          <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
         </select>
       </div>
       <div>
         <label>Growth Bucket</label>
-        <select id="growthBucket">
+        <select id="f_growthBucket">
           <option value="Pipeline">Pipeline</option>
           <option value="New Products">New Products</option>
         </select>
       </div>
     </div>
-  </div>
-
-  <!-- Stage -->
-  <div class="section">
-    <div class="section-title">Stage / Key Action</div>
-    <div>
-      <label>Key Action <span class="req">*</span></label>
-      <select id="keyAction" onchange="onStageChange()">
-        <option value="">Select stage...</option>
-        <option value="Lead">Lead</option>
-        <option value="Demo">Demo</option>
-        <option value="Contracting">Contracting</option>
-        <option value="Schedule Training">Schedule Training</option>
-        <option value="Custom Needed">Custom Needed</option>
-        <option value="Product Needed">Product Needed</option>
-        <option value="Schedule First Case">Schedule First Case</option>
-        <option value="Closed">Closed</option>
-        <option value="Lost">Lost</option>
-      </select>
-      <div class="stage-hint" id="stageHint"></div>
+    <div class="row col1">
+      <div>
+        <label>Stage / Key Action <span class="req">*</span></label>
+        <select id="f_keyAction">
+          <option value="">Select...</option>
+          <option value="Lead">Lead (10%)</option>
+          <option value="Demo">Demo (25%)</option>
+          <option value="Contracting">Contracting (35%)</option>
+          <option value="Schedule Training">Schedule Training (40%)</option>
+          <option value="Custom Needed">Custom Needed (45%)</option>
+          <option value="Product Needed">Product Needed (60%)</option>
+          <option value="Schedule First Case">Schedule First Case (75%)</option>
+          <option value="Closed">Closed (90%)</option>
+          <option value="Lost">Lost (0%)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row col2">
+      <div><label>Key Competitor</label><input type="text" id="f_competitor" placeholder="e.g. Medtronic, Globus..."></div>
+      <div><label>Specialty Items Needed</label><input type="text" id="f_specialtyItems" placeholder="e.g. Navigation, MISTLIF..."></div>
+    </div>
+    <div class="row col1">
+      <div><label>Notes / To Do</label><textarea id="f_notes" rows="3" placeholder="Key action items, surgeon feedback, next steps..."></textarea></div>
     </div>
   </div>
 
-  <!-- Notes -->
-  <div class="section">
-    <div class="section-title">Notes / To Do</div>
-    <textarea id="notes" rows="3" placeholder="Key action items, surgeon feedback, next steps..."></textarea>
-  </div>
-
-  <button class="submit-btn" id="submitBtn" onclick="handleSubmit()">SUBMIT PIPELINE ENTRY →</button>
-  <div class="submit-footer">ENTRIES POST TO CENTRALIZED ZAVATION PIPELINE · 2026</div>
-
+  <button class="submit-btn" id="submitEntryBtn" onclick="submitEntry()">SUBMIT PIPELINE ENTRY →</button>
 </div>
 
-<!-- Success Screen -->
-<div class="success-screen" id="successScreen">
-  <div class="success-icon">✓</div>
-  <div class="success-title">Entry Submitted</div>
-  <div class="success-sub" id="successSub"></div>
-  <div class="success-sub2" id="successSub2"></div>
-  <button class="reset-btn" onclick="resetForm()">+ ADD ANOTHER ENTRY</button>
+<!-- MY DEALS SCREEN -->
+<div class="screen" id="screen-deals">
+  <div class="stats-row" id="dealsStats"></div>
+  <div class="filters">
+    <input type="text" id="dealsSearch" placeholder="Search surgeon, hospital, product..." oninput="renderDeals()">
+    <select id="dealsStageFilter" onchange="renderDeals()">
+      <option value="">All Stages</option>
+      <option>Lead</option><option>Demo</option><option>Contracting</option>
+      <option>Schedule Training</option><option>Custom Needed</option><option>Product Needed</option>
+      <option>Schedule First Case</option><option>Closed</option><option>Lost</option>
+    </select>
+    <span class="record-count" id="dealsCount"></span>
+  </div>
+  <div class="table-wrap">
+    <table id="dealsTable">
+      <thead><tr>
+        <th onclick="sortDeals('surgeon')">Surgeon</th>
+        <th onclick="sortDeals('distributor')">Distributor</th>
+        <th onclick="sortDeals('hospital')">Hospital</th>
+        <th onclick="sortDeals('product')">Product</th>
+        <th onclick="sortDeals('monthlySales')">Monthly $</th>
+        <th onclick="sortDeals('keyAction')">Stage</th>
+        <th onclick="sortDeals('startingMonth')">Start Mo.</th>
+        <th>Edit</th>
+      </tr></thead>
+      <tbody id="dealsBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- FORECAST SCREEN -->
+<div class="screen" id="screen-forecast">
+  <div class="stats-row" id="forecastStats"></div>
+  <div class="section-title" style="margin-bottom:14px;">Probability-Weighted Forecast · By Product · 2026</div>
+  <div class="table-wrap">
+    <table class="forecast-table" id="forecastTable">
+      <thead id="forecastHead"></thead>
+      <tbody id="forecastBody"></tbody>
+    </table>
+  </div>
+  <div class="helper-text" style="margin-top:10px;">Forecast = Monthly Sales × Probability × Months Active (from Starting Month through Dec). Probabilities: Lead 10% · Demo 25% · Contracting 35% · Schedule Training 40% · Custom Needed 45% · Product Needed 60% · Schedule First Case 75% · Closed 90% · Lost 0%.</div>
+</div>
+
+<!-- MANAGER VIEW SCREEN -->
+<div class="screen" id="screen-manager">
+  <div class="stats-row" id="mgrStats"></div>
+  <div class="filters">
+    <input type="text" id="mgrSearch" placeholder="Search surgeon, hospital, product..." oninput="renderManager()">
+    <select id="mgrRepFilter" onchange="renderManager()"><option value="">All Sales Managers</option></select>
+    <select id="mgrStageFilter" onchange="renderManager()">
+      <option value="">All Stages</option>
+      <option>Lead</option><option>Demo</option><option>Contracting</option>
+      <option>Schedule Training</option><option>Custom Needed</option><option>Product Needed</option>
+      <option>Schedule First Case</option><option>Closed</option><option>Lost</option>
+    </select>
+    <select id="mgrGroupingFilter" onchange="renderManager()">
+      <option value="">All Groupings</option>
+      <option>Posterior Lumbar</option><option>Anterior Lumbar</option><option>Anterior Cervical</option>
+      <option>Posterior Cervical</option><option>Interventional</option><option>Biologics</option>
+    </select>
+    <span class="record-count" id="mgrCount"></span>
+  </div>
+  <div class="table-wrap" style="margin-bottom:24px;">
+    <table id="mgrTable">
+      <thead><tr>
+        <th>Sales Mgr</th><th>Surgeon</th><th>Distributor</th><th>Hospital</th>
+        <th>Product</th><th>Grouping</th><th>Monthly $</th><th>Stage</th><th>Start Mo.</th><th>Est. Rev</th>
+      </tr></thead>
+      <tbody id="mgrBody"></tbody>
+    </table>
+  </div>
+  <div class="section-title" style="margin-bottom:14px;">Forecast Rollup · Sales Mgr × Product</div>
+  <div class="table-wrap">
+    <table class="forecast-table" id="mgrForecastTable">
+      <thead id="mgrForecastHead"></thead>
+      <tbody id="mgrForecastBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-bg" id="editModal">
+  <div class="modal">
+    <div class="modal-title" id="editModalTitle">Edit Deal</div>
+    <div class="modal-sub" id="editModalSub"></div>
+    <div class="section">
+      <label>Stage <span class="req">*</span></label>
+      <select id="edit_keyAction">
+        <option value="Lead">Lead (10%)</option><option value="Demo">Demo (25%)</option>
+        <option value="Contracting">Contracting (35%)</option><option value="Schedule Training">Schedule Training (40%)</option>
+        <option value="Custom Needed">Custom Needed (45%)</option><option value="Product Needed">Product Needed (60%)</option>
+        <option value="Schedule First Case">Schedule First Case (75%)</option><option value="Closed">Closed (90%)</option>
+        <option value="Lost">Lost (0%)</option>
+      </select>
+    </div>
+    <div class="row col2">
+      <div><label>Monthly Sales ($)</label><input type="number" id="edit_monthlySales"></div>
+      <div>
+        <label>Starting Month</label>
+        <select id="edit_startingMonth">
+          <option value="1">Jan</option><option value="2">Feb</option><option value="3">Mar</option>
+          <option value="4">Apr</option><option value="5">May</option><option value="6">Jun</option>
+          <option value="7">Jul</option><option value="8">Aug</option><option value="9">Sep</option>
+          <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+        </select>
+      </div>
+    </div>
+    <div class="section" style="margin-top:12px;">
+      <label>Notes</label>
+      <textarea id="edit_notes" rows="3"></textarea>
+    </div>
+    <div class="error-banner" id="editError"></div>
+    <div class="modal-btns">
+      <button class="submit-btn secondary" onclick="closeEdit()">CANCEL</button>
+      <button class="submit-btn" onclick="saveEdit()">SAVE CHANGES</button>
+    </div>
+  </div>
 </div>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxlYfjZd61y7RqHaJHd6KrQNqE1eQgPuL9Vd2F6fF7NwejZTktksO1CetkgvzC4IXwk/exec";
+// ════════════════════════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════════════════════════
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwkAMXOPI9ixKUIomiY5hMe96saqU9gj6ZgGicRe-276L1WyhRfbNxDN-tAtXU81HNj/exec";
+const MANAGER_PASSWORD = "ZavationManager";
+
+const SALES_MANAGERS = ["Craig Barrett","Bill Murphy","Jennifer Drinkwater","Cass Houck","Greg Mayer","Aaron Ingrim","Brady Lance","Nick Scodary","Nathan Teague","Dee Hillhouse","Andy Foster","Gabe Navar","Darleen Hutchins","Craig LaBianco","Mariah Woods"];
+const AVPS = ["Keith Clements","Jeff Mathews","John Yoste"];
+const CCOS = ["Brad Risher"];
+const MANAGERS = [...AVPS, ...CCOS];
+
+const STAGE_PROBABILITIES = {
+  "Lead": 0.10, "Demo": 0.25, "Contracting": 0.35, "Schedule Training": 0.40,
+  "Custom Needed": 0.45, "Product Needed": 0.60, "Schedule First Case": 0.75,
+  "Closed": 0.90, "Lost": 0,
+};
+
+const STAGE_COLORS = {
+  "Lead":               { bg: "#1a2535", color: "#94a3b8", dot: "#64748b" },
+  "Demo":               { bg: "#1a2535", color: "#dc2626", dot: "#dc2626" },
+  "Contracting":        { bg: "#1f1f10", color: "#facc15", dot: "#eab308" },
+  "Schedule Training":  { bg: "#1f1f10", color: "#fb923c", dot: "#f97316" },
+  "Custom Needed":      { bg: "#1f1a2e", color: "#f472b6", dot: "#ec4899" },
+  "Product Needed":     { bg: "#1a2a20", color: "#4ade80", dot: "#22c55e" },
+  "Schedule First Case":{ bg: "#1f1a2e", color: "#c084fc", dot: "#a855f7" },
+  "Closed":             { bg: "#1a2e25", color: "#34d399", dot: "#10b981" },
+  "Lost":               { bg: "#1a1a2e", color: "#4a4a6a", dot: "#3a3a5a" },
+};
 
 const PRODUCT_GROUPINGS = {
   "CentraFix":"Posterior Lumbar","EZ Spand":"Posterior Lumbar","F3D Curved":"Posterior Lumbar",
   "F3D Straight":"Posterior Lumbar","FlxFit":"Posterior Lumbar","Labyrinth PLIF":"Posterior Lumbar",
   "Modular Screw":"Posterior Lumbar","NanoPrime Labyrinth Straight":"Posterior Lumbar",
   "TIGER":"Posterior Lumbar","Tiger 2":"Posterior Lumbar","Tiger 2 Deformity":"Posterior Lumbar",
-  "Tiger 2 Xtab":"Posterior Lumbar","Tiger MIS":"Posterior Lumbar","Whitney PLIF":"Posterior Lumbar",
-  "Xtab":"Posterior Lumbar","Corpectomy Lumbar":"Anterior Lumbar","F3D ALIF":"Anterior Lumbar",
-  "F3D Lateral":"Anterior Lumbar","HL Lateral":"Anterior Lumbar","Lateral Peek":"Anterior Lumbar",
-  "M3":"Anterior Lumbar","NanoPrime Lateral":"Anterior Lumbar","NanoPrime Varisync ALIF":"Anterior Lumbar",
-  "Oro":"Anterior Lumbar","Oro 1 Hole":"Anterior Lumbar","Varisync ALIF":"Anterior Lumbar",
-  "Z span":"Anterior Lumbar","Z span 2 hole":"Anterior Lumbar","Z-Link Lumbar":"Anterior Lumbar",
-  "Zou":"Anterior Lumbar","Anodyne":"Anterior Cervical","Anodyne Single":"Anterior Cervical",
-  "Cervical IBF":"Anterior Cervical","Cervical Plate":"Anterior Cervical","CL5 PEEK":"Anterior Cervical",
-  "Corpectomy Cervical":"Anterior Cervical","EZ Plate":"Anterior Cervical","F3D Cervical":"Anterior Cervical",
-  "F3D Corpectomy":"Anterior Cervical","F3D Suresize":"Anterior Cervical","F3Z Cervical":"Anterior Cervical",
-  "Labyrinth Cervical":"Anterior Cervical","NanoPrime Labyrinth Cervical":"Anterior Cervical",
-  "Stand Alone Cervical":"Anterior Cervical","Terrace":"Anterior Cervical","Varisync Cervical":"Anterior Cervical",
-  "Whitney Cervical":"Anterior Cervical","Z-Link Cervical":"Anterior Cervical",
-  "Tiger OCT":"Posterior Cervical","Entasis":"Interventional","ISP":"Interventional",
-  "Posterior SI":"Interventional","SI Screw":"Interventional","Siber Ti":"Interventional",
-  "Sibi":"Interventional","Sinapse":"Interventional","ZV Graft":"Interventional",
-  "ZV Plasty Bi":"Interventional","ZV Plasty Flex":"Interventional","ZV Plasty Uni":"Interventional",
+  "Tiger 2 Xtab":"Posterior Lumbar","Tiger MIS":"Posterior Lumbar","Whitney PLIF":"Posterior Lumbar","Xtab":"Posterior Lumbar",
+  "Corpectomy Lumbar":"Anterior Lumbar","F3D ALIF":"Anterior Lumbar","F3D Lateral":"Anterior Lumbar",
+  "HL Lateral":"Anterior Lumbar","Lateral Peek":"Anterior Lumbar","M3":"Anterior Lumbar",
+  "NanoPrime Lateral":"Anterior Lumbar","NanoPrime Varisync ALIF":"Anterior Lumbar","Oro":"Anterior Lumbar",
+  "Oro 1 Hole":"Anterior Lumbar","Varisync ALIF":"Anterior Lumbar","Z span":"Anterior Lumbar",
+  "Z span 2 hole":"Anterior Lumbar","Z-Link Lumbar":"Anterior Lumbar","Zou":"Anterior Lumbar",
+  "Anodyne":"Anterior Cervical","Anodyne Single":"Anterior Cervical","Cervical IBF":"Anterior Cervical",
+  "Cervical Plate":"Anterior Cervical","CL5 PEEK":"Anterior Cervical","Corpectomy Cervical":"Anterior Cervical",
+  "EZ Plate":"Anterior Cervical","F3D Cervical":"Anterior Cervical","F3D Corpectomy":"Anterior Cervical",
+  "F3D Suresize":"Anterior Cervical","F3Z Cervical":"Anterior Cervical","Labyrinth Cervical":"Anterior Cervical",
+  "NanoPrime Labyrinth Cervical":"Anterior Cervical","Stand Alone Cervical":"Anterior Cervical",
+  "Terrace":"Anterior Cervical","Varisync Cervical":"Anterior Cervical","Whitney Cervical":"Anterior Cervical",
+  "Z-Link Cervical":"Anterior Cervical","Tiger OCT":"Posterior Cervical",
+  "Entasis":"Interventional","ISP":"Interventional","Posterior SI":"Interventional",
+  "SI Screw":"Interventional","Siber Ti":"Interventional","Sibi":"Interventional","Sinapse":"Interventional",
+  "ZV Graft":"Interventional","ZV Plasty Bi":"Interventional","ZV Plasty Flex":"Interventional","ZV Plasty Uni":"Interventional",
   "Amnion":"Biologics","CBM":"Biologics","Cervical Allograft":"Biologics","Cortical Fiber":"Biologics",
   "DBM Fiber Strips":"Biologics","Unifuze C":"Biologics","Zavatrix":"Biologics","ZV Pro":"Biologics",
   "Occipital Plate ZV":"Other","Posterior Cervical ZV":"Other",
 };
 
-const GROUPING_COLORS = {
-  "Posterior Lumbar":"#38bdf8","Anterior Lumbar":"#818cf8","Anterior Cervical":"#fb923c",
-  "Posterior Cervical":"#f472b6","Interventional":"#34d399","Biologics":"#a3e635","Other":"#64748b",
-};
+const PRODUCT_OPTIONS_HTML = `
+  <optgroup label="── Posterior Lumbar ──">
+    <option>CentraFix</option><option>EZ Spand</option><option>F3D Curved</option><option>F3D Straight</option>
+    <option>FlxFit</option><option>Labyrinth PLIF</option><option>Modular Screw</option><option>NanoPrime Labyrinth Straight</option>
+    <option>TIGER</option><option>Tiger 2</option><option>Tiger 2 Deformity</option><option>Tiger 2 Xtab</option>
+    <option>Tiger MIS</option><option>Whitney PLIF</option><option>Xtab</option>
+  </optgroup>
+  <optgroup label="── Anterior Lumbar ──">
+    <option>Corpectomy Lumbar</option><option>F3D ALIF</option><option>F3D Lateral</option><option>HL Lateral</option>
+    <option>Lateral Peek</option><option>M3</option><option>NanoPrime Lateral</option><option>NanoPrime Varisync ALIF</option>
+    <option>Oro</option><option>Oro 1 Hole</option><option>Varisync ALIF</option><option>Z span</option>
+    <option>Z span 2 hole</option><option>Z-Link Lumbar</option><option>Zou</option>
+  </optgroup>
+  <optgroup label="── Anterior Cervical ──">
+    <option>Anodyne</option><option>Anodyne Single</option><option>Cervical IBF</option><option>Cervical Plate</option>
+    <option>CL5 PEEK</option><option>Corpectomy Cervical</option><option>EZ Plate</option><option>F3D Cervical</option>
+    <option>F3D Corpectomy</option><option>F3D Suresize</option><option>F3Z Cervical</option><option>Labyrinth Cervical</option>
+    <option>NanoPrime Labyrinth Cervical</option><option>Stand Alone Cervical</option><option>Terrace</option>
+    <option>Varisync Cervical</option><option>Whitney Cervical</option><option>Z-Link Cervical</option>
+  </optgroup>
+  <optgroup label="── Posterior Cervical ──"><option>Tiger OCT</option></optgroup>
+  <optgroup label="── Interventional ──">
+    <option>Entasis</option><option>ISP</option><option>Posterior SI</option><option>SI Screw</option>
+    <option>Siber Ti</option><option>Sibi</option><option>Sinapse</option><option>ZV Graft</option>
+    <option>ZV Plasty Bi</option><option>ZV Plasty Flex</option><option>ZV Plasty Uni</option>
+  </optgroup>
+  <optgroup label="── Biologics ──">
+    <option>Amnion</option><option>CBM</option><option>Cervical Allograft</option><option>Cortical Fiber</option>
+    <option>DBM Fiber Strips</option><option>Unifuze C</option><option>Zavatrix</option><option>ZV Pro</option>
+  </optgroup>
+  <optgroup label="── Other ──">
+    <option>Occipital Plate ZV</option><option>Posterior Cervical ZV</option>
+  </optgroup>
+`;
 
-const STAGE_DESCS = {
-  "Lead":"New distributor interest or surgeon brought up",
-  "Demo":"Need to schedule hands-on demo",
-  "Contracting":"Working on hospital approval",
-  "Schedule Training":"Hands-on lab or training needed",
-  "Custom Needed":"Requires a custom to continue",
-  "Product Needed":"Need additional sets of product",
-  "Schedule First Case":"Case booked, <5 cases completed",
-  "Closed":"5+ successful cases — conversion complete",
-  "Lost":"Surgeon/distributor moved on",
-};
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-const STAGE_COLORS = {
-  "Lead":"#94a3b8","Demo":"#38bdf8","Contracting":"#facc15","Schedule Training":"#fb923c",
-  "Custom Needed":"#f472b6","Product Needed":"#4ade80","Schedule First Case":"#c084fc",
-  "Closed":"#34d399","Lost":"#4a4a6a",
-};
+// ════════════════════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════════════════════
+let currentUser = null;
+let userRole = null;     // "sales", "avp", "cco"
+let allDeals = [];       // local cache of all deals
+let editingDeal = null;
+let dealsSortCol = "monthlySales";
+let dealsSortDir = "desc";
 
-function onProductChange() {
-  const product = document.getElementById('product').value;
-  const grouping = PRODUCT_GROUPINGS[product] || '';
-  const color = GROUPING_COLORS[grouping] || '#1e3a50';
-  document.getElementById('grouping').value = grouping;
-  const box = document.getElementById('groupingDisplay');
-  box.textContent = grouping || 'Auto-filled from product';
-  box.style.color = grouping ? color : '#1e3a50';
-  box.style.fontWeight = grouping ? '600' : '400';
-  box.style.letterSpacing = grouping ? '0.07em' : '0';
-  updatePreview();
-}
-
-function onStageChange() {
-  const stage = document.getElementById('keyAction').value;
-  const hint = document.getElementById('stageHint');
-  if (stage && STAGE_DESCS[stage]) {
-    hint.style.display = 'block';
-    hint.style.color = STAGE_COLORS[stage] || '#94a3b8';
-    hint.style.borderColor = (STAGE_COLORS[stage] || '#94a3b8') + '33';
-    hint.innerHTML = `<strong>${stage}:</strong> ${STAGE_DESCS[stage]}`;
-  } else {
-    hint.style.display = 'none';
-  }
-  updatePreview();
-}
-
-function updatePreview() {
-  const surgeon = document.getElementById('surgeon').value;
-  const product = document.getElementById('product').value;
-  const grouping = document.getElementById('grouping').value;
-  const stage = document.getElementById('keyAction').value;
-  const sales = document.getElementById('monthlySales').value;
-  const strip = document.getElementById('previewStrip');
-
-  if (!surgeon && !product) { strip.classList.remove('visible'); return; }
-  strip.classList.add('visible');
-
-  const color = GROUPING_COLORS[grouping] || '#64748b';
-  document.getElementById('prevSurgeon').textContent = surgeon || '';
-  document.getElementById('prevProduct').textContent = product || '';
-  document.getElementById('prevProduct').style.color = color;
-  document.getElementById('prevGrouping').textContent = grouping ? grouping.toUpperCase() : '';
-  document.getElementById('prevGrouping').style.color = color;
-  document.getElementById('prevStage').textContent = stage ? stage.toUpperCase() : '';
-  document.getElementById('prevStage').style.color = STAGE_COLORS[stage] || '#94a3b8';
-  document.getElementById('prevSales').textContent = sales ? '$' + Number(sales).toLocaleString() + '/mo' : '';
-}
-
-// Attach preview update to text inputs
-['surgeon', 'distributor', 'hospital'].forEach(id => {
-  document.getElementById(id).addEventListener('input', updatePreview);
+// ════════════════════════════════════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════════════════════════════════════
+document.getElementById('loginName').addEventListener('change', e => {
+  const name = e.target.value;
+  const isManager = MANAGERS.includes(name);
+  document.getElementById('passwordSection').style.display = isManager ? 'block' : 'none';
 });
 
-function validate() {
-  const required = ['distributor','surgeon','hospital','product','keyAction','monthlySales','priceLevel','startingMonth'];
+function handleLogin() {
+  const name = document.getElementById('loginName').value;
+  const password = document.getElementById('loginPassword').value;
+  const err = document.getElementById('loginError');
+  err.classList.remove('visible');
+
+  if (!name) {
+    err.textContent = "Please select your name."; err.classList.add('visible'); return;
+  }
+
+  if (CCOS.includes(name)) userRole = "cco";
+  else if (AVPS.includes(name)) userRole = "avp";
+  else userRole = "sales";
+
+  if (userRole !== "sales") {
+    if (password !== MANAGER_PASSWORD) {
+      err.textContent = "Incorrect manager password."; err.classList.add('visible'); return;
+    }
+  }
+
+  currentUser = name;
+  sessionStorage.setItem('zavUser', name);
+  sessionStorage.setItem('zavRole', userRole);
+  showApp();
+}
+
+function showApp() {
+  document.getElementById('navMenu').style.display = 'flex';
+  document.getElementById('userTag').style.display = 'block';
+  const roleLabel = userRole === "cco" ? "CCO" : userRole === "avp" ? "AVP" : "SALES MGR";
+  document.getElementById('userTag').textContent = `${currentUser.toUpperCase()} · ${roleLabel}`;
+  if (userRole !== "sales") {
+    document.getElementById('managerNavBtn').style.display = 'inline-block';
+  }
+  // Populate manager rep filter
+  const repFilter = document.getElementById('mgrRepFilter');
+  [...SALES_MANAGERS, ...AVPS, ...CCOS].sort().forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n; opt.textContent = n;
+    repFilter.appendChild(opt);
+  });
+  resetEntryForm();
+  switchScreen('entry');
+  loadAllDeals();
+}
+
+function logout() {
+  sessionStorage.clear();
+  currentUser = null; userRole = null; allDeals = [];
+  switchScreen('login');
+  document.getElementById('navMenu').style.display = 'none';
+  document.getElementById('userTag').style.display = 'none';
+  document.getElementById('managerNavBtn').style.display = 'none';
+  document.getElementById('loginName').value = '';
+  document.getElementById('loginPassword').value = '';
+  document.getElementById('passwordSection').style.display = 'none';
+}
+
+// Auto-login from session
+if (sessionStorage.getItem('zavUser')) {
+  currentUser = sessionStorage.getItem('zavUser');
+  userRole = sessionStorage.getItem('zavRole');
+  showApp();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════════════════════
+document.querySelectorAll('.nav-btn[data-screen]').forEach(btn => {
+  btn.addEventListener('click', () => switchScreen(btn.dataset.screen));
+});
+
+function switchScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const navBtn = document.querySelector(`.nav-btn[data-screen="${name}"]`);
+  if (navBtn) navBtn.classList.add('active');
+
+  if (name === 'deals') renderDeals();
+  if (name === 'forecast') renderForecast();
+  if (name === 'manager') renderManager();
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// ENTRY FORM — Multi-product
+// ════════════════════════════════════════════════════════════════════════════
+function addProductRow() {
+  const list = document.getElementById('productList');
+  const row = document.createElement('div');
+  row.className = 'product-row';
+  row.innerHTML = `
+    <div>
+      <label>Product</label>
+      <select class="product-select">
+        <option value="">Select product...</option>
+        ${PRODUCT_OPTIONS_HTML}
+      </select>
+    </div>
+    <div>
+      <label>Monthly $</label>
+      <input type="number" class="product-sales" placeholder="20000">
+    </div>
+    <button class="remove-btn" onclick="this.parentElement.remove()" title="Remove">×</button>
+  `;
+  list.appendChild(row);
+}
+
+function resetEntryForm() {
+  ['f_distributor','f_surgeon','f_hospital','f_competitor','f_specialtyItems','f_notes'].forEach(id => document.getElementById(id).value = '');
+  ['f_priceLevel','f_startingMonth','f_keyAction'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f_growthBucket').value = 'Pipeline';
+  document.getElementById('productList').innerHTML = '';
+  addProductRow();
+}
+
+async function submitEntry() {
+  const err = document.getElementById('entryError');
+  err.classList.remove('visible');
+  const required = ['f_distributor','f_surgeon','f_hospital','f_priceLevel','f_startingMonth','f_keyAction'];
   let valid = true;
   required.forEach(id => {
     const el = document.getElementById(id);
-    if (!el.value) { el.classList.add('error'); valid = false; }
-    else el.classList.remove('error');
+    if (!el.value) { el.classList.add('error'); valid = false; } else el.classList.remove('error');
   });
-  document.getElementById('headerError').classList.toggle('visible', !valid);
-  return valid;
-}
 
-async function handleSubmit() {
-  if (!validate()) return;
+  const productRows = document.querySelectorAll('.product-row');
+  const products = [];
+  productRows.forEach(row => {
+    const product = row.querySelector('.product-select').value;
+    const sales = row.querySelector('.product-sales').value;
+    if (product && sales) products.push({ product, sales: Number(sales) });
+  });
+  if (products.length === 0) { valid = false; err.textContent = "Add at least one product with a monthly $ value."; err.classList.add('visible'); }
 
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = 'SUBMITTING...';
-  document.getElementById('errorBanner').classList.remove('visible');
+  if (!valid) {
+    if (!err.classList.contains('visible')) { err.textContent = "Please fill in all required fields."; err.classList.add('visible'); }
+    return;
+  }
 
-  const payload = {
-    distributor: document.getElementById('distributor').value,
-    surgeon: document.getElementById('surgeon').value,
-    hospital: document.getElementById('hospital').value,
-    product: document.getElementById('product').value,
-    grouping: document.getElementById('grouping').value,
-    keyAction: document.getElementById('keyAction').value,
-    monthlySales: document.getElementById('monthlySales').value,
-    priceLevel: document.getElementById('priceLevel').value,
-    startingMonth: document.getElementById('startingMonth').value,
-    growthBucket: document.getElementById('growthBucket').value,
-    competitor: document.getElementById('competitor').value,
-    specialtyItems: document.getElementById('specialtyItems').value,
-    notes: document.getElementById('notes').value,
+  const btn = document.getElementById('submitEntryBtn');
+  btn.disabled = true; btn.textContent = 'SUBMITTING...';
+
+  const dealId = 'D' + Date.now();
+  const base = {
+    salesManager: currentUser,
+    distributor: document.getElementById('f_distributor').value,
+    surgeon: document.getElementById('f_surgeon').value,
+    hospital: document.getElementById('f_hospital').value,
+    priceLevel: document.getElementById('f_priceLevel').value,
+    startingMonth: document.getElementById('f_startingMonth').value,
+    growthBucket: document.getElementById('f_growthBucket').value,
+    keyAction: document.getElementById('f_keyAction').value,
+    competitor: document.getElementById('f_competitor').value,
+    specialtyItems: document.getElementById('f_specialtyItems').value,
+    notes: document.getElementById('f_notes').value,
+    dealId,
     submittedAt: new Date().toISOString(),
   };
 
   try {
-    const params = new URLSearchParams();
-    Object.entries(payload).forEach(([k, v]) => params.append(k, v));
-    await fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
-
-    // Show success
-    document.getElementById('mainForm').style.display = 'none';
-    document.getElementById('successSub').textContent = payload.surgeon + ' · ' + payload.product;
-    document.getElementById('successSub2').textContent = payload.distributor + ' · ' + payload.hospital;
-    document.getElementById('successScreen').classList.add('visible');
-  } catch (err) {
-    console.error(err);
-    document.getElementById('errorBanner').classList.add('visible');
-    btn.disabled = false;
-    btn.textContent = 'SUBMIT PIPELINE ENTRY →';
+    for (const p of products) {
+      const payload = { ...base, product: p.product, grouping: PRODUCT_GROUPINGS[p.product] || 'Other', monthlySales: p.sales };
+      const params = new URLSearchParams();
+      Object.entries(payload).forEach(([k,v]) => params.append(k, v));
+      await fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+      // Add to local cache immediately
+      allDeals.push({ ...payload, rowId: dealId + '_' + p.product });
+    }
+    btn.textContent = '✓ SUBMITTED — ADD ANOTHER';
+    setTimeout(() => { resetEntryForm(); btn.disabled = false; btn.textContent = 'SUBMIT PIPELINE ENTRY →'; }, 1800);
+  } catch (e) {
+    err.textContent = "Submission failed. Try again."; err.classList.add('visible');
+    btn.disabled = false; btn.textContent = 'SUBMIT PIPELINE ENTRY →';
   }
 }
 
-function resetForm() {
-  document.querySelectorAll('input, select, textarea').forEach(el => {
-    if (el.type === 'hidden') return;
-    el.value = el.tagName === 'SELECT' && el.id === 'growthBucket' ? 'Pipeline' : '';
-    el.classList.remove('error');
+// ════════════════════════════════════════════════════════════════════════════
+// LOAD DEALS (from sheet, via doGet with ?action=list)
+// ════════════════════════════════════════════════════════════════════════════
+async function loadAllDeals() {
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=list');
+    if (!res.ok) return;
+    const data = await res.json();
+    allDeals = data || [];
+    renderDeals();
+  } catch (e) {
+    console.warn('Could not load deals (likely first run or CORS). The app will use locally cached entries from this session.');
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// MY DEALS — filtered to current user
+// ════════════════════════════════════════════════════════════════════════════
+function fmt$(n) { n = Number(n) || 0; return n >= 1000 ? '$' + (n/1000).toFixed(0) + 'k' : '$' + n; }
+function estRev(d) {
+  const prob = STAGE_PROBABILITIES[d.keyAction] ?? 0;
+  const monthsLeft = Math.max(0, 13 - Number(d.startingMonth));
+  return Math.round(Number(d.monthlySales) * prob * monthsLeft);
+}
+
+function myDeals() {
+  return allDeals.filter(d => d.salesManager === currentUser);
+}
+
+function sortDeals(col) {
+  if (dealsSortCol === col) dealsSortDir = dealsSortDir === 'asc' ? 'desc' : 'asc';
+  else { dealsSortCol = col; dealsSortDir = 'desc'; }
+  renderDeals();
+}
+
+function renderDeals() {
+  const search = document.getElementById('dealsSearch').value.toLowerCase();
+  const stageFilter = document.getElementById('dealsStageFilter').value;
+  let deals = myDeals().filter(d => {
+    if (stageFilter && d.keyAction !== stageFilter) return false;
+    if (search) {
+      const blob = [d.surgeon, d.distributor, d.hospital, d.product].join(' ').toLowerCase();
+      if (!blob.includes(search)) return false;
+    }
+    return true;
   });
-  document.getElementById('groupingDisplay').textContent = 'Auto-filled from product';
-  document.getElementById('groupingDisplay').style.color = '#1e3a50';
-  document.getElementById('stageHint').style.display = 'none';
-  document.getElementById('previewStrip').classList.remove('visible');
-  document.getElementById('headerError').classList.remove('visible');
-  document.getElementById('errorBanner').classList.remove('visible');
-  document.getElementById('submitBtn').disabled = false;
-  document.getElementById('submitBtn').textContent = 'SUBMIT PIPELINE ENTRY →';
-  document.getElementById('mainForm').style.display = 'block';
-  document.getElementById('successScreen').classList.remove('visible');
+  deals.sort((a,b) => {
+    let av = a[dealsSortCol], bv = b[dealsSortCol];
+    if (!isNaN(Number(av))) { av = Number(av); bv = Number(bv); }
+    if (typeof av === 'string') { av = av.toLowerCase(); bv = (bv||'').toLowerCase(); }
+    if (av < bv) return dealsSortDir === 'asc' ? -1 : 1;
+    if (av > bv) return dealsSortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const total = deals.length;
+  const active = deals.filter(d => d.keyAction !== 'Lost').length;
+  const closed = deals.filter(d => d.keyAction === 'Closed').length;
+  const fc = deals.reduce((s,d) => s + estRev(d), 0);
+
+  document.getElementById('dealsStats').innerHTML = `
+    ${statCard('My Deals', total, active + ' active', '#dc2626')}
+    ${statCard('Closed', closed, 'converted', '#10b981')}
+    ${statCard('Active Monthly $', fmt$(deals.filter(d=>d.keyAction!=='Lost').reduce((s,d)=>s+Number(d.monthlySales),0)), 'ex-lost', '#8b5cf6')}
+    ${statCard('My Est. 2026 Rev', fmt$(fc), 'prob-weighted', '#f59e0b')}
+  `;
+  document.getElementById('dealsCount').textContent = total + ' RECORD' + (total !== 1 ? 'S' : '');
+
+  const body = document.getElementById('dealsBody');
+  if (deals.length === 0) {
+    body.innerHTML = `<tr><td colspan="8" class="empty">NO DEALS YET — CLICK + NEW ENTRY TO ADD ONE</td></tr>`;
+    return;
+  }
+  body.innerHTML = deals.map(d => `
+    <tr>
+      <td style="color:#dedede;font-weight:500;">${escapeHTML(d.surgeon)}</td>
+      <td>${escapeHTML(d.distributor)}</td>
+      <td style="color:#888888;">${escapeHTML(d.hospital)}</td>
+      <td style="color:#e8e8e8;font-weight:600;">${escapeHTML(d.product)}</td>
+      <td style="color:#f5f5f5;font-weight:700;font-family:'Syne',sans-serif;">${fmt$(d.monthlySales)}</td>
+      <td>${stagePill(d.keyAction)}</td>
+      <td style="color:#7a5050;text-align:center;">Mo. ${d.startingMonth}</td>
+      <td><button class="nav-btn" style="padding:4px 10px;font-size:9px;" onclick='openEdit(${JSON.stringify(d.rowId || d.dealId+"_"+d.product).replace(/'/g,"&#39;")})'>EDIT</button></td>
+    </tr>
+  `).join('');
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// FORECAST — current user, by product × month
+// ════════════════════════════════════════════════════════════════════════════
+function renderForecast() {
+  const deals = myDeals().filter(d => d.keyAction !== 'Lost');
+  const products = [...new Set(deals.map(d => d.product))].sort();
+
+  let grandTotal = 0;
+  const monthlyTotals = Array(12).fill(0);
+
+  const rows = products.map(p => {
+    const pDeals = deals.filter(d => d.product === p);
+    const monthVals = Array(12).fill(0);
+    pDeals.forEach(d => {
+      const prob = STAGE_PROBABILITIES[d.keyAction] ?? 0;
+      const start = Number(d.startingMonth) - 1;
+      for (let m = start; m < 12; m++) monthVals[m] += Number(d.monthlySales) * prob;
+    });
+    const total = monthVals.reduce((s,v) => s+v, 0);
+    grandTotal += total;
+    monthVals.forEach((v,i) => monthlyTotals[i] += v);
+    return { product: p, monthVals, total };
+  });
+
+  // Stats
+  document.getElementById('forecastStats').innerHTML = `
+    ${statCard('Products in Pipeline', products.length, 'unique', '#dc2626')}
+    ${statCard('Total 2026 Forecast', fmt$(grandTotal), 'prob-weighted', '#f59e0b')}
+    ${statCard('Peak Month', MONTHS[monthlyTotals.indexOf(Math.max(...monthlyTotals))] || '—', fmt$(Math.max(...monthlyTotals)), '#8b5cf6')}
+  `;
+
+  // Table head
+  document.getElementById('forecastHead').innerHTML = `<tr>
+    <th style="text-align:left;">Product</th>
+    ${MONTHS.map(m => `<th style="text-align:right;">${m}</th>`).join('')}
+    <th style="text-align:right;color:#dc2626;">YTD Total</th>
+  </tr>`;
+
+  if (rows.length === 0) {
+    document.getElementById('forecastBody').innerHTML = `<tr><td colspan="14" class="empty">NO ACTIVE DEALS YET</td></tr>`;
+    return;
+  }
+
+  document.getElementById('forecastBody').innerHTML = rows.map(r => `
+    <tr>
+      <td class="product-cell">${escapeHTML(r.product)}</td>
+      ${r.monthVals.map(v => `<td class="month-cell">${v > 0 ? fmt$(Math.round(v)) : '—'}</td>`).join('')}
+      <td class="metric" style="text-align:right;">${fmt$(Math.round(r.total))}</td>
+    </tr>
+  `).join('') + `
+    <tr class="total-row">
+      <td>TOTAL</td>
+      ${monthlyTotals.map(v => `<td style="text-align:right;">${fmt$(Math.round(v))}</td>`).join('')}
+      <td style="text-align:right;">${fmt$(Math.round(grandTotal))}</td>
+    </tr>
+  `;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// MANAGER VIEW
+// ════════════════════════════════════════════════════════════════════════════
+function renderManager() {
+  const search = document.getElementById('mgrSearch').value.toLowerCase();
+  const repFilter = document.getElementById('mgrRepFilter').value;
+  const stageFilter = document.getElementById('mgrStageFilter').value;
+  const groupingFilter = document.getElementById('mgrGroupingFilter').value;
+
+  let deals = allDeals.filter(d => {
+    if (repFilter && d.salesManager !== repFilter) return false;
+    if (stageFilter && d.keyAction !== stageFilter) return false;
+    if (groupingFilter && d.grouping !== groupingFilter) return false;
+    if (search) {
+      const blob = [d.surgeon, d.distributor, d.hospital, d.product, d.salesManager].join(' ').toLowerCase();
+      if (!blob.includes(search)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('mgrStats').innerHTML = `
+    ${statCard('Total Records', deals.length, 'all reps', '#dc2626')}
+    ${statCard('Active Monthly $', fmt$(deals.filter(d=>d.keyAction!=='Lost').reduce((s,d)=>s+Number(d.monthlySales),0)), 'ex-lost', '#8b5cf6')}
+    ${statCard('Est. 2026 Rev', fmt$(deals.reduce((s,d)=>s+estRev(d),0)), 'prob-weighted', '#f59e0b')}
+    ${statCard('Closed', deals.filter(d=>d.keyAction==='Closed').length, 'converted', '#10b981')}
+  `;
+  document.getElementById('mgrCount').textContent = deals.length + ' RECORDS';
+
+  const body = document.getElementById('mgrBody');
+  if (deals.length === 0) {
+    body.innerHTML = `<tr><td colspan="10" class="empty">NO DEALS MATCH FILTERS</td></tr>`;
+  } else {
+    body.innerHTML = deals.map(d => `
+      <tr>
+        <td style="color:#b0a0a0;font-weight:600;">${escapeHTML(d.salesManager)}</td>
+        <td style="color:#dedede;font-weight:500;">${escapeHTML(d.surgeon)}</td>
+        <td>${escapeHTML(d.distributor)}</td>
+        <td style="color:#888888;">${escapeHTML(d.hospital)}</td>
+        <td style="color:#e8e8e8;font-weight:600;">${escapeHTML(d.product)}</td>
+        <td style="font-size:9px;letter-spacing:0.07em;text-transform:uppercase;color:#a87878;">${escapeHTML(d.grouping)}</td>
+        <td style="color:#f5f5f5;font-weight:700;font-family:'Syne',sans-serif;">${fmt$(d.monthlySales)}</td>
+        <td>${stagePill(d.keyAction)}</td>
+        <td style="color:#7a5050;text-align:center;">Mo. ${d.startingMonth}</td>
+        <td style="color:#34d399;font-weight:700;font-family:'Syne',sans-serif;">${fmt$(estRev(d))}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Rollup: Sales Manager × Product
+  const grouped = {};
+  deals.filter(d => d.keyAction !== 'Lost').forEach(d => {
+    const key = d.salesManager + '||' + d.product;
+    if (!grouped[key]) grouped[key] = { rep: d.salesManager, product: d.product, monthVals: Array(12).fill(0), total: 0 };
+    const prob = STAGE_PROBABILITIES[d.keyAction] ?? 0;
+    const start = Number(d.startingMonth) - 1;
+    for (let m = start; m < 12; m++) grouped[key].monthVals[m] += Number(d.monthlySales) * prob;
+  });
+  Object.values(grouped).forEach(g => g.total = g.monthVals.reduce((s,v)=>s+v,0));
+  const rollupRows = Object.values(grouped).sort((a,b) => b.total - a.total);
+
+  const monthlyTotals = Array(12).fill(0);
+  rollupRows.forEach(r => r.monthVals.forEach((v,i) => monthlyTotals[i] += v));
+  const grandTotal = monthlyTotals.reduce((s,v)=>s+v,0);
+
+  document.getElementById('mgrForecastHead').innerHTML = `<tr>
+    <th style="text-align:left;">Sales Mgr</th>
+    <th style="text-align:left;">Product</th>
+    ${MONTHS.map(m => `<th style="text-align:right;">${m}</th>`).join('')}
+    <th style="text-align:right;color:#dc2626;">YTD</th>
+  </tr>`;
+
+  if (rollupRows.length === 0) {
+    document.getElementById('mgrForecastBody').innerHTML = `<tr><td colspan="15" class="empty">NO FORECAST DATA</td></tr>`;
+    return;
+  }
+
+  document.getElementById('mgrForecastBody').innerHTML = rollupRows.map(r => `
+    <tr>
+      <td class="rep-cell">${escapeHTML(r.rep)}</td>
+      <td class="product-cell">${escapeHTML(r.product)}</td>
+      ${r.monthVals.map(v => `<td class="month-cell">${v > 0 ? fmt$(Math.round(v)) : '—'}</td>`).join('')}
+      <td class="metric" style="text-align:right;">${fmt$(Math.round(r.total))}</td>
+    </tr>
+  `).join('') + `
+    <tr class="total-row">
+      <td colspan="2">TOTAL</td>
+      ${monthlyTotals.map(v => `<td style="text-align:right;">${fmt$(Math.round(v))}</td>`).join('')}
+      <td style="text-align:right;">${fmt$(Math.round(grandTotal))}</td>
+    </tr>
+  `;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// EDIT MODAL
+// ════════════════════════════════════════════════════════════════════════════
+function openEdit(rowId) {
+  const d = allDeals.find(x => (x.rowId || x.dealId + '_' + x.product) === rowId);
+  if (!d) return;
+  editingDeal = d;
+  document.getElementById('editModalTitle').textContent = d.surgeon + ' · ' + d.product;
+  document.getElementById('editModalSub').textContent = d.distributor + ' · ' + d.hospital;
+  document.getElementById('edit_keyAction').value = d.keyAction;
+  document.getElementById('edit_monthlySales').value = d.monthlySales;
+  document.getElementById('edit_startingMonth').value = d.startingMonth;
+  document.getElementById('edit_notes').value = d.notes || '';
+  document.getElementById('editError').classList.remove('visible');
+  document.getElementById('editModal').classList.add('visible');
+}
+
+function closeEdit() {
+  document.getElementById('editModal').classList.remove('visible');
+  editingDeal = null;
+}
+
+async function saveEdit() {
+  if (!editingDeal) return;
+  const updates = {
+    action: 'update',
+    dealId: editingDeal.dealId,
+    product: editingDeal.product,
+    keyAction: document.getElementById('edit_keyAction').value,
+    monthlySales: document.getElementById('edit_monthlySales').value,
+    startingMonth: document.getElementById('edit_startingMonth').value,
+    notes: document.getElementById('edit_notes').value,
+  };
+  try {
+    const params = new URLSearchParams();
+    Object.entries(updates).forEach(([k,v]) => params.append(k, v));
+    await fetch(APPS_SCRIPT_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+    // Update local cache
+    editingDeal.keyAction = updates.keyAction;
+    editingDeal.monthlySales = updates.monthlySales;
+    editingDeal.startingMonth = updates.startingMonth;
+    editingDeal.notes = updates.notes;
+    closeEdit();
+    renderDeals();
+    if (document.getElementById('screen-forecast').classList.contains('active')) renderForecast();
+    if (document.getElementById('screen-manager').classList.contains('active')) renderManager();
+  } catch (e) {
+    const err = document.getElementById('editError');
+    err.textContent = "Update failed. Try again."; err.classList.add('visible');
+  }
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════════════════════
+function statCard(label, value, sub, accent) {
+  return `<div class="stat-card">
+    <div class="stat-accent" style="background:${accent};"></div>
+    <div class="stat-label">${label}</div>
+    <div class="stat-value">${value}</div>
+    <div class="stat-sub" style="color:${accent};">${sub}</div>
+  </div>`;
+}
+
+function stagePill(stage) {
+  const c = STAGE_COLORS[stage] || STAGE_COLORS["Demo"];
+  return `<span class="pill" style="background:${c.bg};color:${c.color};border:1px solid ${c.dot}33;">
+    <span class="dot" style="background:${c.dot};"></span>${stage}
+  </span>`;
+}
+
+function escapeHTML(s) {
+  if (s == null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' })[c]);
 }
 </script>
 </body>
